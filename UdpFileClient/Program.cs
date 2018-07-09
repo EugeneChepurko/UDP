@@ -14,6 +14,7 @@ namespace UdpFileClient
         {
             public string fileType = "";
             public long fileSize = 0;
+
         }
 
         private static FileDetails details = new FileDetails();
