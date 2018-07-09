@@ -13,7 +13,7 @@ namespace Udp
         static int localPort = 2221;
         static void Main(string[] args)
         {
-            Console.WriteLine("g");
+            Console.WriteLine("gg");
         }
     }
 }
