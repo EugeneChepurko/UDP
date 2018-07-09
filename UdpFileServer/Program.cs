@@ -16,7 +16,6 @@ namespace UdpFileServer
             public long fileSize = 0;
         }
 
-
         private static FileDetails details = new FileDetails();
 
         private static IPAddress remoteIpAddress;
@@ -55,7 +54,6 @@ namespace UdpFileServer
                 Console.WriteLine(ex.Message);
             }
         }
-
         private static void SendFileData()
         {
             byte[] data = new byte[fileStream.Length];

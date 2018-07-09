@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace UdpFileClient
@@ -62,9 +58,7 @@ namespace UdpFileClient
             {
                 fileStream.Close();
                 removeClient.Close();
-                
-            }
-            
+            } 
         }
 
         private static void getFileInfo()
@@ -80,7 +74,6 @@ namespace UdpFileClient
                 MemoryStream memory = new MemoryStream();
                 memory.Write(data, 0, data.Length);
                 memory.Position = 0;
-
 
                 details = (FileDetails)xmlSerializer.Deserialize(memory);
                 Console.WriteLine("Файл описания получен! Информация:");
