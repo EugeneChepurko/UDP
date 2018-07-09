@@ -8,12 +8,12 @@ namespace Udp
 {
     class Program
     {
-        static IPAddress remoteAddress;
-        static int remotePort;
-        static int localPort;
+        static IPAddress remoteAddress; // host for sending data
+        static int remotePort = 2111;
+        static int localPort = 2221;
         static void Main(string[] args)
         {
-
+            Console.WriteLine("gg");
         }
     }
 }
