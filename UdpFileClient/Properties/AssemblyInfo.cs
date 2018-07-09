@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Udp")]
+[assembly: AssemblyTitle("UdpFileClient")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Win-Yagd")]
-[assembly: AssemblyProduct("Udp")]
-[assembly: AssemblyCopyright("Copyright © Win-Yagd 2018")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("UdpFileClient")]
+[assembly: AssemblyCopyright("Copyright ©  2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("15817507-4aa9-47ef-a298-9ff56537001e")]
+[assembly: Guid("94d55923-7fa4-442a-bad7-65e00f810b3e")]
 
 // Version information for an assembly consists of the following four values:
 //
