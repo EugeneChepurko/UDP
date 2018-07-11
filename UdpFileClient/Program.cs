@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
 using System.Xml.Serialization;
 
 namespace UdpFileClient
@@ -35,25 +34,20 @@ namespace UdpFileClient
 
         private static void getFileData()
         {
-            Random r = new Random();
+            Random rand = new Random();
             try
             {
-                Console.WriteLine("----> Ожидаю файл");
+                Console.WriteLine("Waiting the file...");
                 data = remoteClient.Receive(ref remotePoint);
 
-                Console.WriteLine("----> Файл получен... Сохраняю его!");
-                fileStream = new FileStream(r.Next(Int32.MinValue, Int32.MaxValue).ToString() + "." + details.fileType, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+                Console.WriteLine("File is received. Saving...");
+                fileStream = new FileStream(rand.Next(Int32.MinValue, Int32.MaxValue).ToString() + "." + details.fileType, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
                 fileStream.Write(data, 0, data.Length);
 
-                Console.WriteLine("----> Файл сохранен!");
-                Console.WriteLine("----> Открываем файл!");
+                Console.WriteLine("File saved!");
+                Console.WriteLine("File opening!");
 
                 Process.Start(fileStream.Name);
-                //Thread.Sleep(2000);
-                //Process[] proc = null;
-                //Process.GetProcessesByName(fileStream.Name);
-                //Thread.Sleep(1000);
-                //proc[0].Kill();
             }
             catch (Exception ex)
             {
@@ -70,10 +64,10 @@ namespace UdpFileClient
         {
             try
             {
-                Console.WriteLine("----> Ожидаю информацию о нашем файле");
+                Console.WriteLine("waiting information about your file");
                 data = remoteClient.Receive(ref remotePoint);
 
-                Console.WriteLine("----> Информация получена!");
+                Console.WriteLine("information received!");
 
                 XmlSerializer xmlSerializer = new XmlSerializer(typeof(FileDetails));
                 MemoryStream memory = new MemoryStream();
@@ -81,9 +75,9 @@ namespace UdpFileClient
                 memory.Position = 0;
 
                 details = (FileDetails)xmlSerializer.Deserialize(memory);
-                Console.WriteLine("Файл описания получен! Информация:");
-                Console.WriteLine(details.fileSize + "байт");
-                Console.WriteLine("Тип " + details.fileType);
+                Console.WriteLine("File description received! information:");
+                Console.WriteLine(details.fileSize + " byte");
+                Console.WriteLine("Type of file " + details.fileType);
             }
             catch (Exception ex)
             {

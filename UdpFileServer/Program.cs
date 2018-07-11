@@ -18,12 +18,10 @@ namespace UdpFileServer
         }
 
         private static FileDetails details = new FileDetails();
-
         private static IPAddress remoteIpAddress;
         private const int PORT = 5002;
         private static UdpClient client = new UdpClient();
         private static IPEndPoint endPoint;
-
         private static FileStream fileStream;
 
         [STAThread]
@@ -31,16 +29,16 @@ namespace UdpFileServer
         {
             try
             {
-                Console.WriteLine("IP удаленного узла");
+                Console.WriteLine("Enter IP remote host");
                 remoteIpAddress = IPAddress.Parse(Console.ReadLine().ToString());
                 endPoint = new IPEndPoint(remoteIpAddress, PORT);
 
-                Console.WriteLine("Введите путь и имя файла с расширением");
+                Console.WriteLine("Enter the path and name file with extention");
                 fileStream = new FileStream(Console.ReadLine().ToString(), FileMode.Open, FileAccess.Read);
 
                 if (fileStream.Length > 8192)
                 {
-                    Console.WriteLine("Google обманщик ");
+                    Console.WriteLine("Google is a deceiver!");
                     client.Close();
                     fileStream.Close();
                     return;
@@ -49,7 +47,10 @@ namespace UdpFileServer
                 SendFileInfo();
                 Thread.Sleep(2000);
                 SendFileData();
-                History(fileStream, remoteIpAddress);
+                HistoryOfFiles historyOfFiles = new HistoryOfFiles();
+                historyOfFiles.Add(fileStream, remoteIpAddress);
+                historyOfFiles.Show();
+                //History(fileStream, remoteIpAddress);
             }
             catch (Exception ex)
             {
@@ -61,7 +62,7 @@ namespace UdpFileServer
             byte[] data = new byte[fileStream.Length];
             fileStream.Read(data, 0, Convert.ToInt32(fileStream.Length));
 
-            Console.WriteLine("Отправка файла пошла");
+            Console.WriteLine("File sending...");
             try
             {
                 client.Send(data, data.Length, endPoint);
@@ -75,10 +76,8 @@ namespace UdpFileServer
                 fileStream?.Close();
                 client.Close();
             }
-            Console.WriteLine("Файл отправлен");
-            Console.Read();
+            Console.WriteLine("File sent!");
         }
-
         private static void SendFileInfo()
         {
             details.fileType = fileStream.Name.Substring((int)fileStream.Name.Length - 3, 3);
@@ -87,18 +86,39 @@ namespace UdpFileServer
             XmlSerializer serializer = new XmlSerializer(typeof(FileDetails));
             MemoryStream memory = new MemoryStream();
             serializer.Serialize(memory, details);
-
             memory.Position = 0;
             byte[] data = new byte[memory.Length];
             memory.Read(data, 0, Convert.ToInt32(memory.Length));
 
-            Console.WriteLine("Отправка описания файла");
+            Console.WriteLine("Sending file description");
 
             client.Send(data, data.Length, endPoint);
             memory.Close();
         }
+        public class HistoryOfFiles
+        {
+            private List<string> FileList = new List<string>();
+            private List<string> RemoteIP = new List<string>();
+            public void Add(FileStream file, IPAddress remoteIp)
+            {
+                FileList.Add(file.Name);
+                RemoteIP.Add(remoteIp.ToString());
+            }
+            public void Show()
+            {
+                Console.WriteLine("File sending history");
+                foreach (string files in FileList)
+                {
+                    foreach (string remoteIp in RemoteIP)
+                    {
+                        Console.WriteLine("File " + files + " has been sent " + remoteIp);
+                    }
+                }
+            }
+        }
         private static void History(FileStream file, IPAddress remoteIP)
         {
+            Console.WriteLine("File sending history");
             List<string> FileList = new List<string>();
             FileList.Add(file.Name);
             foreach (string files in FileList)
