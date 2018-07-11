@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using System.Xml.Serialization;
 
 namespace UdpFileClient
@@ -14,14 +15,13 @@ namespace UdpFileClient
         {
             public string fileType = "";
             public long fileSize = 0;
-
         }
 
         private static FileDetails details = new FileDetails();
 
-        private static int localPort = 5002;
-        private static UdpClient removeClient = new UdpClient(localPort);
-        private static IPEndPoint removePoint = null;
+        private static readonly int localPort = 5002;
+        private static UdpClient remoteClient = new UdpClient(localPort);
+        private static IPEndPoint remotePoint = null;
 
         private static FileStream fileStream;
         private static byte[] data = new byte[0];
@@ -39,7 +39,7 @@ namespace UdpFileClient
             try
             {
                 Console.WriteLine("----> Ожидаю файл");
-                data = removeClient.Receive(ref removePoint);
+                data = remoteClient.Receive(ref remotePoint);
 
                 Console.WriteLine("----> Файл получен... Сохраняю его!");
                 fileStream = new FileStream(r.Next(Int32.MinValue, Int32.MaxValue).ToString() + "." + details.fileType, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
@@ -49,7 +49,11 @@ namespace UdpFileClient
                 Console.WriteLine("----> Открываем файл!");
 
                 Process.Start(fileStream.Name);
-
+                //Thread.Sleep(2000);
+                //Process[] proc = null;
+                //Process.GetProcessesByName(fileStream.Name);
+                //Thread.Sleep(1000);
+                //proc[0].Kill();
             }
             catch (Exception ex)
             {
@@ -58,8 +62,8 @@ namespace UdpFileClient
             finally
             {
                 fileStream.Close();
-                removeClient.Close();
-            } 
+                remoteClient.Close();
+            }
         }
 
         private static void getFileInfo()
@@ -67,7 +71,7 @@ namespace UdpFileClient
             try
             {
                 Console.WriteLine("----> Ожидаю информацию о нашем файле");
-                data = removeClient.Receive(ref removePoint);
+                data = remoteClient.Receive(ref remotePoint);
 
                 Console.WriteLine("----> Информация получена!");
 

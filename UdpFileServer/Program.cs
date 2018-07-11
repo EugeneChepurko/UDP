@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -14,8 +15,6 @@ namespace UdpFileServer
         {
             public string fileType = "";
             public long fileSize = 0;
-
-
         }
 
         private static FileDetails details = new FileDetails();
@@ -50,6 +49,7 @@ namespace UdpFileServer
                 SendFileInfo();
                 Thread.Sleep(2000);
                 SendFileData();
+                History(fileStream, remoteIpAddress);
             }
             catch (Exception ex)
             {
@@ -72,8 +72,7 @@ namespace UdpFileServer
             }
             finally
             {
-                if (fileStream != null)
-                    fileStream.Close();
+                fileStream?.Close();
                 client.Close();
             }
             Console.WriteLine("Файл отправлен");
@@ -97,6 +96,15 @@ namespace UdpFileServer
 
             client.Send(data, data.Length, endPoint);
             memory.Close();
+        }
+        private static void History(FileStream file, IPAddress remoteIP)
+        {
+            List<string> FileList = new List<string>();
+            FileList.Add(file.Name);
+            foreach (string files in FileList)
+            {
+                Console.WriteLine("File " + files + " has been sent " + remoteIP);
+            }
         }
     }
 }
