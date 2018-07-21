@@ -23,38 +23,55 @@ namespace UdpFileServer
         private static UdpClient client = new UdpClient();
         private static IPEndPoint endPoint;
         private static FileStream fileStream;
+        static List<PersonInfo> FileList = new List<PersonInfo>();
 
         [STAThread]
         static void Main(string[] args)
         {
+            
             try
             {
                 Console.WriteLine("Enter IP remote host");
                 remoteIpAddress = IPAddress.Parse(Console.ReadLine().ToString());
                 endPoint = new IPEndPoint(remoteIpAddress, PORT);
 
-                Console.WriteLine("Enter the path and name file with extention");
-                fileStream = new FileStream(Console.ReadLine().ToString(), FileMode.Open, FileAccess.Read);
-
-                if (fileStream.Length > 8192)
+                ConsoleKeyInfo keyInfo = new ConsoleKeyInfo();
+                PersonInfo personInfo;
+                do
                 {
-                    Console.WriteLine("Google is a deceiver!");
-                    client.Close();
-                    fileStream.Close();
-                    return;
-                }
+                   
+                    Console.WriteLine("Enter the path and name file with extention");
+                    personInfo = new PersonInfo();
+                    fileStream = new FileStream(Console.ReadLine().ToString(), FileMode.Open, FileAccess.Read);
+                    
 
-                SendFileInfo();
-                Thread.Sleep(2000);
-                SendFileData();
-                HistoryOfFiles historyOfFiles = new HistoryOfFiles();
-                historyOfFiles.Add(fileStream, remoteIpAddress);
-                historyOfFiles.Show();
-                //History(fileStream, remoteIpAddress);
+                    if (fileStream.Length > 8192)
+                    {
+                        Console.WriteLine("Google is a deceiver!");
+                        Disconnect();
+                        return;
+                    }
+
+                    SendFileInfo();
+                    Thread.Sleep(1500);
+                    SendFileData();
+                    //personInfos.Add(new PersonInfo(personInfo));
+
+                    personInfo.AddInfoPerson(fileStream, remoteIpAddress);
+
+                    FileList.Add(personInfo);
+
+                    //personInfo.AddPerson(personInfo);
+                    Console.WriteLine("Press Esc to exit or another key for enter the path:");
+                    keyInfo = Console.ReadKey(true);
+                    fileStream.Close();
+                } while (keyInfo.Key != ConsoleKey.Escape);
+                personInfo.ShowList();
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                Disconnect();
             }
         }
         private static void SendFileData()
@@ -70,11 +87,7 @@ namespace UdpFileServer
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-            }
-            finally
-            {
-                fileStream?.Close();
-                client.Close();
+                Disconnect();
             }
             Console.WriteLine("File sent!");
         }
@@ -95,10 +108,57 @@ namespace UdpFileServer
             client.Send(data, data.Length, endPoint);
             memory.Close();
         }
+        public class PersonInfo
+        {
+            private List<PersonInfo> persons = new List<PersonInfo>();
+            FileStream myfileStream;
+            IPAddress myip;
+
+            public PersonInfo()
+            {
+            }
+
+            //FileStream fileStream;
+            //IPAddress remoteIPAddress;
+            public void AddInfoPerson (FileStream file, IPAddress remoteIp)
+            {
+                myfileStream = file;
+                myip = remoteIp;
+            }
+            public void AddPerson(PersonInfo person)
+            {
+                persons.Add(person);
+            }
+            //public void Show()
+            //{
+            //    Console.WriteLine("File " + fileStream + " has been sent " + remoteIPAddress);
+            //}
+            public void Show()
+            {
+                Console.WriteLine("File " + myfileStream.Name + " has been sent " + myip);
+            }
+            public void ShowList()
+            {
+                Console.Clear();
+                Console.WriteLine("History sending files:");
+
+                foreach (var person in FileList)
+                {
+                    person.Show();
+                }
+            }  
+        }
+        
         public class HistoryOfFiles
         {
             private List<string> FileList = new List<string>();
             private List<string> RemoteIP = new List<string>();
+            public void AddInfo(FileStream file, IPAddress remoteIp)
+            {
+                fileStream = file;
+                remoteIpAddress = remoteIp;
+
+            }
             public void Add(FileStream file, IPAddress remoteIp)
             {
                 FileList.Add(file.Name);
@@ -106,7 +166,8 @@ namespace UdpFileServer
             }
             public void Show()
             {
-                Console.WriteLine("File sending history");
+                Console.Clear();
+                Console.WriteLine("History sending files:");
                 foreach (string files in FileList)
                 {
                     foreach (string remoteIp in RemoteIP)
@@ -125,6 +186,12 @@ namespace UdpFileServer
             {
                 Console.WriteLine("File " + files + " has been sent " + remoteIP);
             }
+        }
+        private static void Disconnect()
+        {
+            fileStream?.Close();
+            client.Close();
+            Environment.Exit(0);
         }
     }
 }

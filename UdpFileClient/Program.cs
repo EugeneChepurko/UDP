@@ -23,13 +23,16 @@ namespace UdpFileClient
         private static IPEndPoint remotePoint = null;
 
         private static FileStream fileStream;
+
         private static byte[] data = new byte[0];
 
         static void Main(string[] args)
         {
-            getFileInfo();
-            getFileData();
-            Console.Read();
+            for (int i = 0; i < 2; i++)
+            {
+                getFileInfo();
+                getFileData();
+            }
         }
 
         private static void getFileData()
@@ -53,11 +56,10 @@ namespace UdpFileClient
             {
                 Console.WriteLine(ex.Message);
             }
-            finally
-            {
-                fileStream.Close();
-                remoteClient.Close();
-            }
+            //finally
+            //{
+            //    Disconnect();
+            //}
         }
 
         private static void getFileInfo()
@@ -83,6 +85,11 @@ namespace UdpFileClient
             {
                 Console.WriteLine(ex.Message);
             }
+        }
+        private static void Disconnect()
+        {
+            fileStream.Close();
+            remoteClient.Close();
         }
     }
 }
