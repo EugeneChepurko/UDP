@@ -17,24 +17,20 @@ namespace UdpFileClient
         }
 
         private static FileDetails details = new FileDetails();
-
         private static readonly int localPort = 5002;
         private static UdpClient remoteClient = new UdpClient(localPort);
         private static IPEndPoint remotePoint = null;
-
         private static FileStream fileStream;
-
         private static byte[] data = new byte[0];
 
         static void Main(string[] args)
         {
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < 3; i++)
             {
                 getFileInfo();
                 getFileData();
             }
         }
-
         private static void getFileData()
         {
             Random rand = new Random();
@@ -61,7 +57,6 @@ namespace UdpFileClient
             //    Disconnect();
             //}
         }
-
         private static void getFileInfo()
         {
             try
